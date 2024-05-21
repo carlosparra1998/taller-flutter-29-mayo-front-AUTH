@@ -7,11 +7,16 @@ class HttpClient {
   static Future<HttpResponse> get(String call, {String? accessToken}) async {
     try {
       var url = Uri.parse(Constants.getCompleteUrl + call);
+      var headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json; charset=UTF-8"
+      };
+      if (accessToken != null) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
       http.Response response = await http.get(
         url,
-        headers: accessToken != null
-            ? {'Authorization': 'Bearer $accessToken'}
-            : null,
+        headers: headers,
       );
       if (response.statusCode != 200) {
         return HttpResponse(
@@ -37,12 +42,17 @@ class HttpClient {
   }) async {
     try {
       var url = Uri.parse(Constants.getCompleteUrl + call);
+      var headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json; charset=UTF-8"
+      };
+      if (accessToken != null) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
       http.Response response = await http.post(
         url,
-        body: json,
-        headers: accessToken != null
-            ? {'Authorization': 'Bearer $accessToken'}
-            : null,
+        body: jsonEncode(json),
+        headers: headers,
       );
       if (response.statusCode != 200) {
         return HttpResponse(
@@ -68,12 +78,17 @@ class HttpClient {
   }) async {
     try {
       var url = Uri.parse(Constants.getCompleteUrl + call);
+      var headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json; charset=UTF-8"
+      };
+      if (accessToken != null) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
       http.Response response = await http.put(
         url,
-        body: json,
-        headers: accessToken != null
-            ? {'Authorization': 'Bearer $accessToken'}
-            : null,
+        body: jsonEncode(json),
+        headers: headers,
       );
       if (response.statusCode != 200) {
         return HttpResponse(
@@ -99,12 +114,17 @@ class HttpClient {
   }) async {
     try {
       var url = Uri.parse(Constants.getCompleteUrl + call);
+      var headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json; charset=UTF-8"
+      };
+      if (accessToken != null) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
       http.Response response = await http.delete(
         url,
-        body: json,
-        headers: accessToken != null
-            ? {'Authorization': 'Bearer $accessToken'}
-            : null,
+        body: jsonEncode(json),
+        headers: headers,
       );
       if (response.statusCode != 200) {
         return HttpResponse(

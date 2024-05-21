@@ -63,15 +63,15 @@ class AuthController extends ChangeNotifier {
     dynamic data = jsonDecode(response.data);
     logedUser = User(
       userName: loginUserName.text,
-      accessToken: data['access_token'],
-      refreshToken: data['refresh_token'],
+      accessToken: data['data']['access_token'],
+      refreshToken: data['data']['refresh_token'],
     );
     notifyListeners();
     return true;
   }
 
-  String? getAccessTokenUser() {
-    return logedUser?.accessToken;
+  String getAccessTokenUser() {
+    return logedUser?.accessToken ?? '';
   }
 
   void clearForms() {

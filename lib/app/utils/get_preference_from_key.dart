@@ -12,3 +12,16 @@ int getPreferenceFromKey(String? preferenceKey) {
       return 1;
   }
 }
+
+String getKeyFromPreference(int? preference) {
+  switch (preference) {
+    case 1:
+      return "LOW";
+    case 2:
+      return "MEDIUM";
+    case 3:
+      return "HIGH";
+    default:
+      return "LOW";
+  }
+}
