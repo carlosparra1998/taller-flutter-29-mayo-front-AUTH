@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:taller_29_mayo_front/app/model/task.dart';
 import 'package:taller_29_mayo_front/app/reutilizables/my_button.dart';
 import 'package:taller_29_mayo_front/app/reutilizables/my_dropdown.dart';
 import 'package:taller_29_mayo_front/app/reutilizables/my_text_field.dart';
 import 'package:taller_29_mayo_front/app/utils/get_color_from_key.dart';
-import 'package:taller_29_mayo_front/app/view/home/home_controller.dart';
 
-Future<String?> configTaskDialog(
-  BuildContext context,
-  bool editMode,
-  Task? taskEdit,
-) async {
-  editMode && taskEdit != null
-      ? context.read<HomeController>().setTaskInForm(taskEdit)
-      : context.read<HomeController>().clearForms();
+Future<String?> configTaskDialog(BuildContext context, bool editMode) async {
   return showDialog(
       context: context,
       builder: (context) {
@@ -32,22 +22,17 @@ Future<String?> configTaskDialog(
                 MyTextField(
                   labelText: 'Título (requerido)',
                   smallMode: true,
-                  controller: context.read<HomeController>().titleTask,
                 ),
                 const SizedBox(height: 20),
                 MyTextField(
                   labelText: 'Descripción',
-                  controller: context.read<HomeController>().descriptionTask,
                 ),
                 const SizedBox(height: 20),
                 MyDropdown(
                   labelText: 'Color',
                   items: colorKeys,
-                  value: context.read<HomeController>().colorTask.text.isEmpty
-                      ? null
-                      : context.read<HomeController>().colorTask.text,
+                  value: null,
                   onChanged: (v) {
-                    context.read<HomeController>().changeColorFromDropdown(v);
                   },
                   smallMode: true,
                 ),
@@ -55,16 +40,7 @@ Future<String?> configTaskDialog(
                 MyButton(
                   label: 'Guardar',
                   onPressed: () async {
-                    bool success = editMode
-                        ? await context.read<HomeController>().modifierTask(
-                              context,
-                              taskEdit!,
-                            )
-                        : await context.read<HomeController>().addNewTask(context);
-
-                    if(success){
-                      Navigator.pop(context);
-                    }
+                    Navigator.pop(context);
                   },
                 )
               ],
