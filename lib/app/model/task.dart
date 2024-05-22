@@ -18,7 +18,7 @@ class Task {
   });
 
   Task.fromJson(Map<String, dynamic> json) {
-    uuidTask = json['title'];
+    uuidTask = json['uuidTask'];
     userName = json['userName'];
     title = json['title'];
     description = json['description'];

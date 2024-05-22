@@ -98,7 +98,7 @@ class HomeController extends ChangeNotifier {
       return;
     }
     int index = userTasks.indexWhere((e) => task.uuidTask == e.uuidTask);
-    userTasks[index].active = !task.active!;
+    userTasks[index].active = task.active!;
     notifyListeners();
   }
 
