@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:taller_29_mayo_front/app/model/task.dart';
 import 'package:taller_29_mayo_front/app/utils/get_color_from_key.dart';
+import 'package:taller_29_mayo_front/app/view/auth/auth_controller.dart';
 import 'package:taller_29_mayo_front/app/view/home/dialogs/config_task.dart';
+import 'package:taller_29_mayo_front/app/view/home/home_controller.dart';
 
 class MyTask extends StatelessWidget {
   final Task task;
@@ -24,7 +27,7 @@ class MyTask extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 15.0),
-                child: circleButton(task.color),
+                child: circleButton(context, task.color),
               ),
               Expanded(
                 child: Column(
@@ -46,7 +49,7 @@ class MyTask extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 15.0),
-                child: deleteButton(),
+                child: deleteButton(context),
               ),
             ],
           ),
@@ -55,23 +58,40 @@ class MyTask extends StatelessWidget {
     );
   }
 
-  Widget circleButton(String? taskColor) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 2,
-          color: getColorFromKey(taskColor) ?? Color(0xFF000000),
+  Widget circleButton(BuildContext context, String? taskColor) {
+    return GestureDetector(
+      onTap: () {
+        context.read<HomeController>().changeStatusTask(
+              context,
+              task,
+              context.read<AuthController>().getAccessTokenUser(),
+            );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 2,
+            color: getColorFromKey(taskColor) ?? Color(0xFF000000),
+          ),
+          shape: BoxShape.circle,
         ),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        Icons.check,
-        color: getColorFromKey(taskColor),
+        child: Icon(
+          Icons.check,
+          color: getColorFromKey(taskColor),
+        ),
       ),
     );
   }
 
-  Widget deleteButton() {
-    return const Icon(Icons.delete, size: 20);
+  Widget deleteButton(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          context.read<HomeController>().deleteTask(
+                context,
+                task.uuidTask!,
+                context.read<AuthController>().getAccessTokenUser(),
+              );
+        },
+        child: const Icon(Icons.delete, size: 20));
   }
 }

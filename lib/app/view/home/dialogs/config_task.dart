@@ -34,29 +34,52 @@ Future<String?> configTaskDialog(
                 MyTextField(
                   labelText: 'Título (requerido)',
                   smallMode: true,
+                  controller: context.read<HomeController>().titleTask,
                 ),
                 const SizedBox(height: 20),
-                MyTextField(labelText: 'Descripción'),
+                MyTextField(
+                  labelText: 'Descripción',
+                  controller: context.read<HomeController>().descriptionTask,
+                ),
                 const SizedBox(height: 20),
                 MyDropdown(
                   labelText: 'Color',
                   items: colorKeys,
-                  value: null,
-                  onChanged: (v) {},
+                  value: context.read<HomeController>().colorTask.text.isEmpty
+                      ? null
+                      : context.read<HomeController>().colorTask.text,
+                  onChanged: (v) {
+                    context.read<HomeController>().changeColorFromDropdown(v);
+                  },
                   smallMode: true,
                 ),
                 const SizedBox(height: 20),
                 MyDropdown(
                   labelText: 'Prioridad',
                   items: preferenceKeys,
-                  value: null,
-                  onChanged: (v) {},
+                  value:
+                      context.read<HomeController>().preferenceTask.text.isEmpty
+                          ? null
+                          : context.read<HomeController>().preferenceTask.text,
+                  onChanged: (v) {
+                    context
+                        .read<HomeController>()
+                        .changePreferenceFromDropdown(v);
+                  },
                   smallMode: true,
                 ),
                 const SizedBox(height: 20),
                 MyButton(
                   label: 'Guardar',
                   onPressed: () {
+                    if (editMode) {
+                      context.read<HomeController>().modifierTask(
+                            context,
+                            taskEdit!.uuidTask!,
+                            context.read<AuthController>().getAccessTokenUser(),
+                          );
+                      return;
+                    }
                     context.read<HomeController>().addNewTask(
                           context,
                           context.read<AuthController>().getAccessTokenUser(),

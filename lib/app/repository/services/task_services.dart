@@ -13,4 +13,20 @@ class TaskServices {
       accessToken: accessToken,
     );
   }
+
+  static Future<HttpResponse> modTask(Task task, String accessToken) async {
+    return await HttpClient.put(
+      'tasks/${task.uuidTask}',
+      task.toJson(),
+      accessToken: accessToken,
+    );
+  }
+
+    static Future<HttpResponse> deleteTask(String uuidTask, String accessToken) async {
+    return await HttpClient.delete(
+      'tasks/$uuidTask',
+      null,
+      accessToken: accessToken,
+    );
+  }
 }

@@ -36,13 +36,21 @@ class _HomeViewState extends State<HomeView> {
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
           child: SingleChildScrollView(
             child: Column(
-              children: provider.userTasks.isEmpty
+              children: provider.userTasks
+                      .where((element) => element.active ?? false)
+                      .isEmpty
                   ? [emptyMessage()]
                   : List.generate(
-                      provider.userTasks.length,
+                      provider.userTasks
+                          .where((element) => element.active ?? false)
+                          .length,
                       (index) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
-                        child: MyTask(task: provider.userTasks[index]),
+                        child: MyTask(
+                          task: provider.userTasks
+                              .where((element) => element.active ?? false)
+                              .toList()[index],
+                        ),
                       ),
                     ),
             ),

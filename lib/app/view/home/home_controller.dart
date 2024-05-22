@@ -23,7 +23,9 @@ class HomeController extends ChangeNotifier {
       showToast(context, response.msg ?? "Error en el sistema");
       return;
     }
-    dynamic t = jsonDecode(response.data);
+    jsonDecode(response.data)["data"].map((element) => Task.fromJson(element)).toList();
+    userTasks = (jsonDecode(response.data)["data"] as List).map((element) => Task.fromJson(element)).toList();
+    notifyListeners();
   }
 
   void addNewTask(BuildContext context, String userAccessToken) async {
@@ -36,9 +38,11 @@ class HomeController extends ChangeNotifier {
       userName: context.read<AuthController>().logedUser!.userName ?? "",
       title: titleTask.text,
       description: descriptionTask.text,
-      color: colorTask.text,
+      color: colorTask.text.isEmpty ? null : colorTask.text,
       active: true,
-      preference: getPreferenceFromKey(preferenceTask.text),
+      preference: preferenceTask.text.isEmpty
+          ? null
+          : getPreferenceFromKey(preferenceTask.text),
     );
     HttpResponse response =
         await TaskServices.addTask(newTask, userAccessToken);
@@ -51,17 +55,66 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void modifierTask(BuildContext context, String userAccessToken) async {
+  void modifierTask(
+    BuildContext context,
+    String uuidTask,
+    String userAccessToken,
+  ) async {
     if (titleTask.text.isEmpty) {
       showToast(context, "Debes introducir al menos un título");
       return;
     }
-    //TODO
+    Task modTask = Task(
+      uuidTask: uuidTask,
+      userName: context.read<AuthController>().logedUser!.userName ?? "",
+      title: titleTask.text,
+      description: descriptionTask.text,
+      color: colorTask.text.isEmpty ? null : colorTask.text,
+      active: true,
+      preference: preferenceTask.text.isEmpty
+          ? null
+          : getPreferenceFromKey(preferenceTask.text),
+    );
+    HttpResponse response =
+        await TaskServices.addTask(modTask, userAccessToken);
+    if (response.hasError) {
+      showToast(context, response.msg ?? "Error en el sistema");
+      return;
+    }
+    int taskIndex = userTasks.indexWhere((e) => e.uuidTask == uuidTask);
+    userTasks[taskIndex] = modTask;
     notifyListeners();
   }
 
-  void changeStatusTask(BuildContext context, String userAccessToken) async {
-    //TODO
+  void changeStatusTask(
+    BuildContext context,
+    Task task,
+    String userAccessToken,
+  ) async {
+    task.active = !task.active!;
+    HttpResponse response = await TaskServices.modTask(task, userAccessToken);
+    if (response.hasError) {
+      showToast(context, response.msg ?? "Error en el sistema");
+      return;
+    }
+    int index = userTasks.indexWhere((e) => task.uuidTask == e.uuidTask);
+    userTasks[index].active = !task.active!;
+    notifyListeners();
+  }
+
+  void deleteTask(
+    BuildContext context,
+    String uuidTask,
+    String userAccessToken,
+  ) async {
+    HttpResponse response =
+        await TaskServices.deleteTask(uuidTask, userAccessToken);
+    if (response.hasError) {
+      showToast(context, response.msg ?? "Error en el sistema");
+      return;
+    }
+    userTasks.removeWhere((e) => e.uuidTask == uuidTask);
+
     notifyListeners();
   }
 
@@ -70,6 +123,16 @@ class HomeController extends ChangeNotifier {
     descriptionTask.text = task.description ?? "";
     colorTask.text = task.color ?? "";
     preferenceTask.text = getKeyFromPreference(task.preference);
+    notifyListeners();
+  }
+
+  void changeColorFromDropdown(String? color) {
+    colorTask.text = color ?? "";
+    notifyListeners();
+  }
+
+  void changePreferenceFromDropdown(String? preference) {
+    preferenceTask.text = preference ?? "";
     notifyListeners();
   }
 
