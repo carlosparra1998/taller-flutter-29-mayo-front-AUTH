@@ -4,8 +4,12 @@ class MyButton extends StatelessWidget {
   final String? label;
   final Function? onPressed;
   final bool containsBorder;
-  const MyButton(
-      {super.key, this.label, this.onPressed, this.containsBorder = true});
+  const MyButton({
+    super.key,
+    this.label,
+    this.onPressed,
+    this.containsBorder = true,
+  });
 
   @override
   Widget build(BuildContext context) {

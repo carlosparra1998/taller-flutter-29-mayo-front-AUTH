@@ -5,7 +5,6 @@ class Task {
   String? description;
   String? color;
   bool? active;
-  int? preference;
 
   Task({
     required this.uuidTask,
@@ -14,7 +13,6 @@ class Task {
     required this.description,
     required this.color,
     required this.active,
-    required this.preference,
   });
 
   Task.fromJson(Map<String, dynamic> json) {
@@ -24,7 +22,6 @@ class Task {
     description = json['description'];
     color = json['color'];
     active = json['active'];
-    preference = json['preference'];
   }
 
   Map<String, dynamic> toJson() {
@@ -33,7 +30,6 @@ class Task {
     json['description'] = description;
     json['color'] = color;
     json['active'] = active;
-    json['preference'] = preference;
     return json;
   }
 }

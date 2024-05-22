@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:taller_29_mayo_front/app/model/user.dart';
 import 'package:taller_29_mayo_front/app/repository/http_client.dart';
 import 'package:taller_29_mayo_front/app/repository/services/user_services.dart';
+import 'package:taller_29_mayo_front/app/repository/shared_preference_client.dart';
 import 'package:taller_29_mayo_front/app/utils/toast.dart';
 
 class AuthController extends ChangeNotifier {
@@ -14,8 +14,6 @@ class AuthController extends ChangeNotifier {
   TextEditingController loginUserName = TextEditingController();
   TextEditingController loginPassword = TextEditingController();
 
-  User? logedUser;
-
   Future<bool> registerUser(BuildContext context) async {
     if (registerUserName.text.isEmpty) {
       showToast(context, "El usuario debe estar cumplimentado");
@@ -23,12 +21,10 @@ class AuthController extends ChangeNotifier {
     }
     if (registerPassword.text.isEmpty || registerConfirmPassword.text.isEmpty) {
       showToast(context, "Debes introducir una contraseña");
-
       return false;
     }
     if (registerPassword.text != registerConfirmPassword.text) {
       showToast(context, "Las contraseñas no coinciden");
-
       return false;
     }
     HttpResponse response = await UserServices.registerUser(
@@ -61,26 +57,12 @@ class AuthController extends ChangeNotifier {
       return false;
     }
     dynamic data = jsonDecode(response.data);
-    logedUser = User(
-      userName: loginUserName.text,
-      accessToken: data['data']['access_token'],
-      refreshToken: data['data']['refresh_token'],
-    );
+
+    await SharedPreferenceClient.setString('access_token', data['data']['access_token']);
+    await SharedPreferenceClient.setString('access_token', data['data']['access_token']);
+    await SharedPreferenceClient.setString('user_name', loginUserName.text);
+  
     notifyListeners();
     return true;
-  }
-
-  String getAccessTokenUser() {
-    return logedUser?.accessToken ?? '';
-  }
-
-  void clearForms() {
-    registerUserName.clear();
-    registerPassword.clear();
-    registerConfirmPassword.clear();
-    loginUserName.clear();
-    loginPassword.clear();
-    logedUser = null;
-    notifyListeners();
   }
 }

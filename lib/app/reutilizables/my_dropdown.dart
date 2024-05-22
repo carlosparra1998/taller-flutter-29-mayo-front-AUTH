@@ -32,9 +32,7 @@ class MyDropdown extends StatelessWidget {
             (item) => DropdownMenuItem<String>(
               alignment: AlignmentDirectional.centerStart,
               value: item,
-              child: Text(
-                item,
-              ),
+              child: Text(item),
             ),
           )
           .toList(),

@@ -1,98 +1,78 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:taller_29_mayo_front/app/model/task.dart';
 import 'package:taller_29_mayo_front/app/repository/http_client.dart';
 import 'package:taller_29_mayo_front/app/repository/services/task_services.dart';
-import 'package:taller_29_mayo_front/app/utils/get_preference_from_key.dart';
+import 'package:taller_29_mayo_front/app/repository/shared_preference_client.dart';
 import 'package:taller_29_mayo_front/app/utils/toast.dart';
-import 'package:taller_29_mayo_front/app/view/auth/auth_controller.dart';
 
 class HomeController extends ChangeNotifier {
   TextEditingController titleTask = TextEditingController();
   TextEditingController descriptionTask = TextEditingController();
   TextEditingController colorTask = TextEditingController();
-  TextEditingController preferenceTask = TextEditingController();
 
   List<Task> userTasks = [];
 
-  void getTasks(BuildContext context, String userAccessToken) async {
-    HttpResponse response = await TaskServices.getTasks(userAccessToken);
+  void getTasks(BuildContext context) async {
+    HttpResponse response = await TaskServices.getTasks();
     if (response.hasError) {
       showToast(context, response.msg ?? "Error en el sistema");
       return;
     }
-    jsonDecode(response.data)["data"].map((element) => Task.fromJson(element)).toList();
-    userTasks = (jsonDecode(response.data)["data"] as List).map((element) => Task.fromJson(element)).toList();
+    userTasks = (jsonDecode(response.data)["data"] as List)
+        .map((element) => Task.fromJson(element))
+        .toList();
     notifyListeners();
   }
 
-  void addNewTask(BuildContext context, String userAccessToken) async {
+  Future<bool> addNewTask(BuildContext context) async {
     if (titleTask.text.isEmpty) {
       showToast(context, "Debes introducir al menos un título");
-      return;
+      return false;
     }
     Task newTask = Task(
       uuidTask: "default",
-      userName: context.read<AuthController>().logedUser!.userName ?? "",
+      userName: await SharedPreferenceClient.getString('user_name'),
       title: titleTask.text,
       description: descriptionTask.text,
       color: colorTask.text.isEmpty ? null : colorTask.text,
       active: true,
-      preference: preferenceTask.text.isEmpty
-          ? null
-          : getPreferenceFromKey(preferenceTask.text),
     );
-    HttpResponse response =
-        await TaskServices.addTask(newTask, userAccessToken);
+    HttpResponse response = await TaskServices.addTask(newTask);
     if (response.hasError) {
       showToast(context, response.msg ?? "Error en el sistema");
-      return;
+      return false;
     }
     newTask.uuidTask = jsonDecode(response.data)['data']['uuidTask'];
     userTasks.add(newTask);
     notifyListeners();
+    return true;
   }
 
-  void modifierTask(
-    BuildContext context,
-    String uuidTask,
-    String userAccessToken,
-  ) async {
+  Future<bool> modifierTask(BuildContext context, Task task) async {
     if (titleTask.text.isEmpty) {
       showToast(context, "Debes introducir al menos un título");
-      return;
+      return false;
     }
-    Task modTask = Task(
-      uuidTask: uuidTask,
-      userName: context.read<AuthController>().logedUser!.userName ?? "",
-      title: titleTask.text,
-      description: descriptionTask.text,
-      color: colorTask.text.isEmpty ? null : colorTask.text,
-      active: true,
-      preference: preferenceTask.text.isEmpty
-          ? null
-          : getPreferenceFromKey(preferenceTask.text),
-    );
-    HttpResponse response =
-        await TaskServices.addTask(modTask, userAccessToken);
+    task.title = titleTask.text;
+    task.description = descriptionTask.text;
+    task.color = colorTask.text.isEmpty ? null : colorTask.text;
+
+    HttpResponse response = await TaskServices.modTask(task);
     if (response.hasError) {
       showToast(context, response.msg ?? "Error en el sistema");
-      return;
+      return false;
     }
-    int taskIndex = userTasks.indexWhere((e) => e.uuidTask == uuidTask);
-    userTasks[taskIndex] = modTask;
+    int taskIndex = userTasks.indexWhere((e) => e.uuidTask == task.uuidTask);
+    userTasks[taskIndex] = task;
     notifyListeners();
+    return true;
   }
 
-  void changeStatusTask(
-    BuildContext context,
-    Task task,
-    String userAccessToken,
-  ) async {
+  void changeStatusTask(BuildContext context, Task task) async {
     task.active = !task.active!;
-    HttpResponse response = await TaskServices.modTask(task, userAccessToken);
+    HttpResponse response = await TaskServices.modTask(task);
     if (response.hasError) {
       showToast(context, response.msg ?? "Error en el sistema");
       return;
@@ -102,19 +82,13 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteTask(
-    BuildContext context,
-    String uuidTask,
-    String userAccessToken,
-  ) async {
-    HttpResponse response =
-        await TaskServices.deleteTask(uuidTask, userAccessToken);
+  void deleteTask(BuildContext context, String uuidTask) async {
+    HttpResponse response = await TaskServices.deleteTask(uuidTask);
     if (response.hasError) {
       showToast(context, response.msg ?? "Error en el sistema");
       return;
     }
     userTasks.removeWhere((e) => e.uuidTask == uuidTask);
-
     notifyListeners();
   }
 
@@ -122,7 +96,6 @@ class HomeController extends ChangeNotifier {
     titleTask.text = task.title ?? "";
     descriptionTask.text = task.description ?? "";
     colorTask.text = task.color ?? "";
-    preferenceTask.text = getKeyFromPreference(task.preference);
     notifyListeners();
   }
 
@@ -131,16 +104,10 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changePreferenceFromDropdown(String? preference) {
-    preferenceTask.text = preference ?? "";
-    notifyListeners();
-  }
-
   void clearForms() {
     titleTask.clear();
     descriptionTask.clear();
     colorTask.clear();
-    preferenceTask.clear();
     notifyListeners();
   }
 }
