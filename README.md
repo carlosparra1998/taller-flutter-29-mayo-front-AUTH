@@ -1,16 +1,11 @@
-# taller_29_mayo_front
+# TODO LIST - FRONT (Esqueleto UI + Autenticación)
 
-A new Flutter project.
 
-## Getting Started
+## **Objetivo**
 
-This project is a starting point for a Flutter application.
+Con el código proporcionado, solamente debes terminar la lógica de negocio de la parte del HomeView (gestión de las tareas). Tanto el UI como la autenticación ya se hallan en la app.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## **Conectarme a la API**
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+https://github.com/carlosparra1998/taller-flutter-29-mayo-back
